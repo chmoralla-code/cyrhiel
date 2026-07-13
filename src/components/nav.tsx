@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { MusicToggle } from "@/components/background-music";
 import { useSite } from "@/components/site-provider";
 
 export function Nav() {
@@ -27,6 +28,7 @@ export function Nav() {
               {item.label}
             </a>
           ))}
+          <MusicToggle />
           <a
             href={`mailto:${site.email}`}
             className="focus-ring display border border-seam-strong px-3 py-1.5 text-[0.65rem] tracking-[0.18em] uppercase text-foreground transition-colors hover:border-reactor hover:bg-panel-hover"
@@ -35,15 +37,18 @@ export function Nav() {
           </a>
         </nav>
 
-        <button
-          type="button"
-          className="focus-ring display text-[0.65rem] tracking-[0.18em] uppercase text-muted md:hidden"
-          aria-expanded={open}
-          aria-controls="mobile-nav"
-          onClick={() => setOpen((v) => !v)}
-        >
-          {open ? "Close" : "Menu"}
-        </button>
+        <div className="flex items-center gap-4 md:hidden">
+          <MusicToggle />
+          <button
+            type="button"
+            className="focus-ring display text-[0.65rem] tracking-[0.18em] uppercase text-muted"
+            aria-expanded={open}
+            aria-controls="mobile-nav"
+            onClick={() => setOpen((v) => !v)}
+          >
+            {open ? "Close" : "Menu"}
+          </button>
+        </div>
       </div>
 
       {open && (

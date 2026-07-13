@@ -1,4 +1,5 @@
 import { About } from "@/components/about";
+import { BackgroundMusicProvider } from "@/components/background-music";
 import { Capabilities } from "@/components/capabilities";
 import { Contact } from "@/components/contact";
 import { Hero } from "@/components/hero";
@@ -14,14 +15,16 @@ export default async function Home() {
 
   return (
     <SiteProvider content={content}>
-      <ScrollProgress />
-      <Nav />
-      <main>
-        <Hero />
-        <About />
-        <Capabilities />
-        <Contact />
-      </main>
+      <BackgroundMusicProvider>
+        <ScrollProgress />
+        <Nav />
+        <main>
+          <Hero />
+          <About />
+          <Capabilities />
+          <Contact />
+        </main>
+      </BackgroundMusicProvider>
     </SiteProvider>
   );
 }
