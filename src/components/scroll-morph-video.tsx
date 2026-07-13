@@ -28,7 +28,7 @@ export function ScrollMorphVideo({
   src,
   progress,
   className = "",
-  aspectClass = "aspect-[944/960]",
+  aspectClass = "aspect-[768/1168]",
   active = true,
 }: ScrollMorphVideoProps) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -200,7 +200,7 @@ export function ScrollMorphVideo({
         aria-label="Scroll to morph"
         {...({ disablePictureInPicture: true } as object)}
       >
-        <source src={`${src}?v=hero-rembg2`} type={sourceType(src)} />
+        <source src={`${src}?v=morph-alpha-v3`} type={sourceType(src)} />
       </video>
     </div>
   );

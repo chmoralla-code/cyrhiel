@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   motion,
   useMotionValueEvent,
@@ -80,13 +80,8 @@ function WebShot({
 export function About() {
   const site = useSite();
   const sectionRef = useRef<HTMLElement>(null);
-  const featuredStageRef = useRef<HTMLDivElement>(null);
-  const featuredVideoRef = useRef<HTMLVideoElement>(null);
-  const soundArmedRef = useRef(false);
-  const featuredVisibleRef = useRef(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [soundArmed, setSoundArmed] = useState(false);
   const [ironActive, setIronActive] = useState(true);
+  const [featuredActive, setFeaturedActive] = useState(false);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -132,127 +127,18 @@ export function About() {
     [0.54, 0.62, 0.7],
     [0, 0.95, 1],
   );
-
-  const playFeatured = useCallback(async (withSound: boolean) => {
-    const video = featuredVideoRef.current;
-    if (!video) return;
-    video.volume = 1;
-    video.muted = !withSound;
-    try {
-      await video.play();
-      if (withSound) {
-        soundArmedRef.current = true;
-        setSoundArmed(true);
-      }
-    } catch {
-      // Browsers block unmuted autoplay until a gesture — fall back muted.
-      if (withSound) {
-        video.muted = true;
-        try {
-          await video.play();
-        } catch {
-          /* ignore */
-        }
-      }
-    }
-  }, []);
-
-  // Any click/key/touch unlocks unmuted playback for when the featured card shows.
-  useEffect(() => {
-    const unlock = () => {
-      soundArmedRef.current = true;
-      setSoundArmed(true);
-      if (featuredVisibleRef.current) {
-        void playFeatured(true);
-      }
-    };
-    window.addEventListener("pointerdown", unlock, { passive: true });
-    window.addEventListener("keydown", unlock);
-    return () => {
-      window.removeEventListener("pointerdown", unlock);
-      window.removeEventListener("keydown", unlock);
-    };
-  }, [playFeatured]);
+  // Map the featured-visible scroll range onto a full 0→1 morph scrub.
+  const featuredMorphProgress = useTransform(
+    scrollYProgress,
+    [0.52, 0.98],
+    [0, 1],
+    { clamp: true },
+  );
 
   useMotionValueEvent(scrollYProgress, "change", (value) => {
     setIronActive(value < 0.58);
-    const video = featuredVideoRef.current;
-    if (!video) return;
-    const visible = value >= 0.5;
-    if (visible) {
-      if (!featuredVisibleRef.current) {
-        featuredVisibleRef.current = true;
-        // Auto-play with sound as soon as the highlighted build appears.
-        void playFeatured(true);
-      }
-    } else if (featuredVisibleRef.current) {
-      featuredVisibleRef.current = false;
-      video.pause();
-    }
+    setFeaturedActive(value >= 0.48);
   });
-
-  useEffect(() => {
-    const video = featuredVideoRef.current;
-    if (!video) return;
-    video.pause();
-    featuredVisibleRef.current = false;
-    soundArmedRef.current = false;
-    setSoundArmed(false);
-  }, [site.featured.video]);
-
-  useEffect(() => {
-    const onFullscreenChange = () => {
-      const doc = document as Document & {
-        webkitFullscreenElement?: Element | null;
-      };
-      const active =
-        document.fullscreenElement === featuredStageRef.current ||
-        doc.webkitFullscreenElement === featuredStageRef.current;
-      setIsFullscreen(Boolean(active));
-    };
-    document.addEventListener("fullscreenchange", onFullscreenChange);
-    document.addEventListener("webkitfullscreenchange", onFullscreenChange);
-    return () => {
-      document.removeEventListener("fullscreenchange", onFullscreenChange);
-      document.removeEventListener(
-        "webkitfullscreenchange",
-        onFullscreenChange,
-      );
-    };
-  }, []);
-
-  async function toggleFullscreen() {
-    const stage = featuredStageRef.current;
-    if (!stage) return;
-
-    const doc = document as Document & {
-      webkitFullscreenElement?: Element | null;
-      webkitExitFullscreen?: () => Promise<void> | void;
-    };
-    const el = stage as HTMLDivElement & {
-      webkitRequestFullscreen?: () => Promise<void> | void;
-    };
-
-    const active =
-      document.fullscreenElement === stage ||
-      doc.webkitFullscreenElement === stage;
-
-    if (active) {
-      if (document.exitFullscreen) await document.exitFullscreen();
-      else if (doc.webkitExitFullscreen) await doc.webkitExitFullscreen();
-      return;
-    }
-
-    if (stage.requestFullscreen) await stage.requestFullscreen();
-    else if (el.webkitRequestFullscreen) await el.webkitRequestFullscreen();
-    await playFeatured(true);
-  }
-
-  async function enableSound() {
-    soundArmedRef.current = true;
-    setSoundArmed(true);
-    await playFeatured(true);
-  }
 
   return (
     <section ref={sectionRef} id="about" className="relative h-[300vh]">
@@ -396,7 +282,6 @@ export function About() {
               </motion.div>
 
               <motion.div
-                ref={featuredStageRef}
                 className="pointer-events-auto absolute inset-0 z-[5] flex flex-col justify-center gap-3 lg:gap-4"
                 style={{
                   opacity: featuredOpacity,
@@ -416,48 +301,14 @@ export function About() {
                   </p>
                 </motion.div>
 
-                <div className="relative overflow-hidden border border-seam-strong bg-background/90 shadow-[0_0_0_1px_var(--reactor-soft)]">
-                  <div className="relative aspect-[1168/784] w-full max-h-[min(36vh,20rem)] bg-black lg:max-h-[min(48vh,26rem)]">
-                    <video
-                      ref={featuredVideoRef}
-                      className="absolute inset-0 h-full w-full object-cover"
-                      src={`${site.featured.video}?v=featured-audio2`}
-                      loop
-                      playsInline
-                      preload="auto"
-                      controls={isFullscreen}
-                      aria-label={`${site.featured.title} featured build`}
-                    />
-                    <div
-                      aria-hidden
-                      className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20"
-                    />
-                    <div className="hud-brackets pointer-events-none absolute inset-3 z-[2]" />
-
-                    <div className="absolute top-3 right-3 z-[4] flex items-center gap-2">
-                      {!soundArmed ? (
-                        <button
-                          type="button"
-                          onClick={enableSound}
-                          className="focus-ring display border border-seam-strong bg-background/90 px-3 py-2 text-[0.58rem] tracking-[0.16em] uppercase text-foreground transition-colors hover:border-reactor"
-                        >
-                          Sound on
-                        </button>
-                      ) : null}
-                      <button
-                        type="button"
-                        onClick={toggleFullscreen}
-                        className="focus-ring display border border-seam-strong bg-background/90 px-3 py-2 text-[0.58rem] tracking-[0.16em] uppercase text-foreground transition-colors hover:border-reactor"
-                        aria-label={
-                          isFullscreen
-                            ? "Exit full screen"
-                            : "Expand featured video to full screen"
-                        }
-                      >
-                        {isFullscreen ? "Exit" : "Full screen"}
-                      </button>
-                    </div>
-                  </div>
+                <div className="relative mx-auto flex w-full max-w-[min(100%,560px)] items-center justify-center md:max-w-[min(100%,620px)]">
+                  <ScrollMorphVideo
+                    src={site.featured.video}
+                    progress={featuredMorphProgress}
+                    aspectClass="aspect-[768/1168]"
+                    className="max-h-[min(58vh,32rem)] w-auto !h-full md:max-h-[min(68vh,38rem)]"
+                    active={featuredActive}
+                  />
                 </div>
               </motion.div>
             </div>

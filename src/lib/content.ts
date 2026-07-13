@@ -123,7 +123,7 @@ export const DEFAULT_SITE: SiteContent = {
     title: "Omni AI Builder",
     detail:
       "ChatGPT-class AI—*built to design, code, and ship almost anything,* from interfaces to full operating systems.",
-    video: "/videos/featured-build.mp4",
+    video: "/videos/featured-morph-alpha.webm",
   },
   capabilities: {
     eyebrow: "Builds",

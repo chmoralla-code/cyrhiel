@@ -169,9 +169,9 @@ export function Hero() {
             </motion.p>
           </div>
 
-          {/* Morph stage — remaining sticky height on mobile; full figure must fit */}
+          {/* Morph stage — remaining sticky height on mobile; portrait figure height-capped on desktop */}
           <motion.div
-            className="relative z-10 flex min-h-0 w-full flex-[1_1_0] items-end justify-center pb-1 md:absolute md:top-1/2 md:right-[-2vw] md:block md:h-auto md:w-[min(916px,84vw)] md:max-w-none md:flex-none md:items-center md:pb-0 md:-translate-y-1/2"
+            className="relative z-10 flex min-h-0 w-full flex-[1_1_0] items-end justify-center pb-1 md:absolute md:top-1/2 md:right-[-1vw] md:flex md:h-[calc(100svh-4.5rem)] md:w-[min(620px,52vw)] md:max-w-none md:flex-none md:items-center md:justify-end md:pb-0 md:-translate-y-1/2"
             initial={reduced ? false : { opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{
@@ -181,13 +181,14 @@ export function Hero() {
             }}
           >
             <motion.div
-              className="relative flex h-full max-h-full w-full max-w-[min(92vw,640px)] items-center justify-center md:max-w-none"
+              className="relative flex h-full max-h-full w-full max-w-[min(92vw,420px)] items-center justify-center md:max-h-full md:max-w-none md:w-auto"
               style={reduced ? undefined : { scale: videoScale }}
             >
               <ScrollMorphVideo
                 src={site.heroVideo}
                 progress={scrollYProgress}
-                className="!h-auto max-h-full !w-full md:!h-full"
+                aspectClass="aspect-[768/1168]"
+                className="!h-auto max-h-full !w-full md:!h-full md:!w-auto"
               />
             </motion.div>
           </motion.div>
