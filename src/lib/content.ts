@@ -44,6 +44,11 @@ export type SiteContent = {
     eyebrow: string;
     headline: string;
     body: string[];
+    base: string;
+    helps: string;
+    proof: string;
+    tags: string[];
+    cta: string;
     morphVideo: string;
   };
   featured: FeaturedBuild;
@@ -92,11 +97,25 @@ export const DEFAULT_SITE: SiteContent = {
   },
   about: {
     eyebrow: "Profile",
-    headline: "Trained to design. Wired to ship.",
+    headline: "Architecture graduate. Systems builder.",
     body: [
-      "Architecture taught me to read *constraints* first—space, flow, structure—before a single line is drawn.",
-      "That same discipline shapes every build: websites, Android APKs, custom tools, POS, and PisoWiFi stacks that businesses *rely on every day.*",
+      "Instead of drafting buildings for everyone, I design *structures and systems* that uplift the business industry.",
+      "Same discipline as architecture—constraints, load paths, no wasted motion—applied to websites, APKs, software, POS, and PisoWiFi stacks.",
     ],
+    base: "Ubujan, Tagbilaran, Bohol",
+    helps:
+      "Built for people chasing *passive income*—and business owners who want to *save time and money.*",
+    proof:
+      "With AI in the loop, I ship systems *faster than traditional IT timelines.*",
+    tags: [
+      "Websites",
+      "Android APK",
+      "Software",
+      "POS",
+      "PisoWiFi",
+      "AI",
+    ],
+    cta: "Brief me",
     morphVideo: "/videos/about-morph-hd.mp4",
   },
   featured: {

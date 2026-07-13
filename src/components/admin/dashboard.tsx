@@ -331,6 +331,43 @@ export function AdminDashboard({ initial }: { initial: SiteContent }) {
               />
             </div>
             <Field
+              label="Base / location"
+              value={draft.about.base}
+              onChange={(v) => update("about", { ...draft.about, base: v })}
+            />
+            <Field
+              label="Who I help"
+              value={draft.about.helps}
+              multiline
+              rows={3}
+              onChange={(v) => update("about", { ...draft.about, helps: v })}
+            />
+            <Field
+              label="Proof line"
+              value={draft.about.proof}
+              multiline
+              rows={2}
+              onChange={(v) => update("about", { ...draft.about, proof: v })}
+            />
+            <Field
+              label="Tags (comma-separated)"
+              value={draft.about.tags.join(", ")}
+              onChange={(v) =>
+                update("about", {
+                  ...draft.about,
+                  tags: v
+                    .split(",")
+                    .map((t) => t.trim())
+                    .filter(Boolean),
+                })
+              }
+            />
+            <Field
+              label="CTA label"
+              value={draft.about.cta}
+              onChange={(v) => update("about", { ...draft.about, cta: v })}
+            />
+            <Field
               label="Iron Man morph video path"
               value={draft.about.morphVideo}
               onChange={(v) =>

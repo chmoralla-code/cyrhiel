@@ -22,6 +22,9 @@ function mergeSite(raw: unknown): SiteContent {
       body: Array.isArray((raw.about as { body?: unknown })?.body)
         ? ((raw.about as { body: string[] }).body as string[])
         : base.about.body,
+      tags: Array.isArray((raw.about as { tags?: unknown })?.tags)
+        ? ((raw.about as { tags: string[] }).tags as string[])
+        : base.about.tags,
     },
     featured: {
       ...base.featured,

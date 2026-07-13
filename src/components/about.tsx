@@ -275,23 +275,46 @@ export function About() {
               visibility: profileVisibility,
             }}
           >
-            <div className="mx-auto grid w-full max-w-6xl gap-10 md:grid-cols-[0.35fr_0.65fr] md:gap-16">
-              <div>
-                <p className="eyebrow">{site.about.eyebrow}</p>
-                <SilverShineText
-                  as="h2"
-                  text={site.about.headline}
-                  className="section-title mt-4 text-[clamp(1.7rem,3.6vw,2.4rem)]"
-                />
-              </div>
+            <div className="mx-auto w-full max-w-3xl">
+              <p className="eyebrow">{site.about.eyebrow}</p>
+              <p className="meta-label mt-3 text-muted">{site.about.base}</p>
+              <SilverShineText
+                as="h2"
+                text={site.about.headline}
+                className="section-title mt-4 text-[clamp(1.7rem,3.6vw,2.4rem)]"
+              />
 
-              <div className="space-y-7">
+              <div className="mt-7 space-y-5">
                 {site.about.body.map((paragraph) => (
-                  <p key={paragraph} className="prose-quiet max-w-none">
+                  <p key={paragraph} className="prose-quiet max-w-[54ch]">
                     <EmphasizedText text={paragraph} />
                   </p>
                 ))}
+                <p className="prose-quiet max-w-[54ch]">
+                  <EmphasizedText text={site.about.helps} />
+                </p>
+                <p className="max-w-[48ch] text-[0.95rem] text-reactor/90">
+                  <EmphasizedText text={site.about.proof} />
+                </p>
               </div>
+
+              <ul className="mt-8 flex flex-wrap gap-2">
+                {site.about.tags.map((tag) => (
+                  <li
+                    key={tag}
+                    className="display border border-seam px-3 py-1.5 text-[0.58rem] tracking-[0.16em] uppercase text-muted"
+                  >
+                    {tag}
+                  </li>
+                ))}
+              </ul>
+
+              <a
+                href={`mailto:${site.email}`}
+                className="focus-ring display mt-8 inline-flex items-center border border-seam-strong bg-foreground px-5 py-2.5 text-[0.7rem] font-semibold tracking-[0.18em] uppercase text-background transition-opacity hover:opacity-90"
+              >
+                {site.about.cta}
+              </a>
             </div>
           </motion.div>
 
