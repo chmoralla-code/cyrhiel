@@ -58,8 +58,8 @@ export function About() {
   );
   const featuredOpacity = useTransform(
     scrollYProgress,
-    [0.32, 0.42, 0.5],
-    [0.2, 0.95, 1],
+    [0.28, 0.36, 0.42],
+    [0, 1, 1],
   );
 
   const playFeatured = useCallback(async (withSound: boolean) => {
