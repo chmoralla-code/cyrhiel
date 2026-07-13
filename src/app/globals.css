@@ -1,0 +1,307 @@
+@import "tailwindcss";
+
+:root {
+  --background: #050505;
+  --foreground: #f2f2f2;
+  --muted: #9a9a9a;
+  --muted-dim: #6b6b6b;
+  --seam: rgba(255, 255, 255, 0.12);
+  --seam-strong: rgba(255, 255, 255, 0.28);
+  --panel: rgba(255, 255, 255, 0.03);
+  --panel-hover: rgba(255, 255, 255, 0.06);
+  --reactor: #e8f4ff;
+  --reactor-glow: rgba(200, 230, 255, 0.45);
+  --reactor-soft: rgba(200, 230, 255, 0.18);
+  --vignette: radial-gradient(
+    ellipse 80% 60% at 50% 40%,
+    transparent 0%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-dim: var(--muted-dim);
+  --color-seam: var(--seam);
+  --color-seam-strong: var(--seam-strong);
+  --color-panel: var(--panel);
+  --color-panel-hover: var(--panel-hover);
+  --color-reactor: var(--reactor);
+  --color-reactor-glow: var(--reactor-glow);
+  --font-display: var(--font-oxanium);
+  --font-sans: var(--font-source-sans);
+  --font-serif: var(--font-newsreader);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-source-sans), system-ui, sans-serif;
+  font-feature-settings: "ss01" on, "kern" on;
+  letter-spacing: 0.005em;
+  min-height: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+/* Atmosphere: grain + vignette */
+.site-atmosphere {
+  position: relative;
+  isolation: isolate;
+}
+
+.site-atmosphere::before {
+  content: "";
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 128 128' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 128px 128px;
+  contain: strict;
+}
+
+.site-atmosphere::after {
+  content: "";
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 49;
+  background: var(--vignette);
+}
+
+/* HUD utilities */
+.hud-frame {
+  position: relative;
+  background: var(--panel);
+  border: 1px solid var(--seam);
+}
+
+.hud-frame::before,
+.hud-frame::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-color: var(--seam-strong);
+  border-style: solid;
+  pointer-events: none;
+}
+
+.hud-frame::before {
+  top: -1px;
+  left: -1px;
+  border-width: 1px 0 0 1px;
+}
+
+.hud-frame::after {
+  bottom: -1px;
+  right: -1px;
+  border-width: 0 1px 1px 0;
+}
+
+.hud-brackets {
+  position: relative;
+}
+
+.hud-brackets::before,
+.hud-brackets::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: var(--seam-strong);
+  border-style: solid;
+  pointer-events: none;
+}
+
+.hud-brackets::before {
+  top: 0;
+  left: 0;
+  border-width: 1px 0 0 1px;
+}
+
+.hud-brackets::after {
+  bottom: 0;
+  right: 0;
+  border-width: 0 1px 1px 0;
+}
+
+.hud-hairline {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--seam-strong),
+    transparent
+  );
+}
+
+.elevator-card {
+  position: relative;
+  background: var(--panel);
+}
+
+.elevator-card video {
+  transform: translateZ(0);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-oxanium), sans-serif;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--muted-dim) 88%, var(--reactor) 12%);
+}
+
+.eyebrow::before {
+  content: "";
+  width: 1.35rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--reactor-soft), var(--seam-strong));
+  flex-shrink: 0;
+}
+
+.display {
+  font-family: var(--font-oxanium), sans-serif;
+  letter-spacing: 0.02em;
+  text-wrap: balance;
+}
+
+.section-title {
+  font-family: var(--font-oxanium), sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.035em;
+  line-height: 1.12;
+  text-wrap: balance;
+  color: color-mix(in srgb, var(--foreground) 92%, var(--reactor) 8%);
+}
+
+.lead {
+  font-family: var(--font-newsreader), Georgia, serif;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: -0.015em;
+  line-height: 1.22;
+  text-wrap: pretty;
+  color: color-mix(in srgb, var(--foreground) 94%, var(--reactor) 6%);
+}
+
+.lead em {
+  font-style: normal;
+  font-family: var(--font-oxanium), sans-serif;
+  font-weight: 600;
+  font-size: 0.92em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--foreground);
+}
+
+.prose-quiet {
+  max-width: 36rem;
+  color: color-mix(in srgb, var(--muted) 90%, var(--foreground) 10%);
+  font-family: var(--font-newsreader), Georgia, serif;
+  font-size: clamp(1.02rem, 1.15vw, 1.12rem);
+  font-weight: 400;
+  line-height: 1.72;
+  letter-spacing: 0.005em;
+  text-wrap: pretty;
+}
+
+.prose-quiet em {
+  font-style: italic;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--foreground) 86%, var(--reactor) 14%);
+}
+
+.blurb {
+  font-family: var(--font-newsreader), Georgia, serif;
+  font-size: 0.95rem;
+  font-weight: 400;
+  line-height: 1.55;
+  letter-spacing: 0.01em;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.meta-label {
+  font-family: var(--font-oxanium), sans-serif;
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted-dim);
+}
+
+/* Metallic shine that waves across each word */
+.silver-shine {
+  display: inline-block;
+  background-image: linear-gradient(
+    100deg,
+    #5a5a5a 0%,
+    #7a7a7a 28%,
+    #b8b8b8 42%,
+    #ffffff 49%,
+    #ffffff 51%,
+    #b8b8b8 58%,
+    #7a7a7a 72%,
+    #5a5a5a 100%
+  );
+  background-size: 280% 100%;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: silver-shine-wave 5.5s ease-in-out infinite;
+}
+
+@keyframes silver-shine-wave {
+  0%,
+  100% {
+    background-position: 160% 50%;
+  }
+  50% {
+    background-position: -60% 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .silver-shine {
+    animation: none;
+    background-position: 40% 50%;
+  }
+}
+
+.focus-ring:focus-visible {
+  outline: 1px solid var(--reactor);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: rgba(200, 230, 255, 0.25);
+  color: #fff;
+}
