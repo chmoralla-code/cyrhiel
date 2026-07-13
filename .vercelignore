@@ -1,0 +1,5 @@
+tmp/
+public/videos/hero-morph-scrub.mp4
+public/videos/_hero-*.png
+.env*
+.vercel
