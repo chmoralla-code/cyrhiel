@@ -115,13 +115,13 @@ export function About() {
   const ironVisibility = useTransform(ironOpacity, (value) =>
     value <= 0.01 ? "hidden" : "visible",
   );
-  // Profile copy clears the stage so featured owns the viewport alone.
+  // Profile stays readable through most of the morph, then yields to featured.
   const profileOpacity = useTransform(
     scrollYProgress,
-    [0.72, 0.8, 0.86],
-    [1, 0.25, 0],
+    [0.78, 0.86, 0.92],
+    [1, 0.35, 0],
   );
-  const profileY = useTransform(scrollYProgress, [0.72, 0.86], [0, -18]);
+  const profileY = useTransform(scrollYProgress, [0.78, 0.92], [0, -14]);
   const profileVisibility = useTransform(profileOpacity, (value) =>
     value <= 0.02 ? "hidden" : "visible",
   );
@@ -275,46 +275,58 @@ export function About() {
               visibility: profileVisibility,
             }}
           >
-            <div className="mx-auto w-full max-w-3xl">
-              <p className="eyebrow">{site.about.eyebrow}</p>
-              <p className="meta-label mt-3 text-muted">{site.about.base}</p>
-              <SilverShineText
-                as="h2"
-                text={site.about.headline}
-                className="section-title mt-4 text-[clamp(1.7rem,3.6vw,2.4rem)]"
-              />
-
-              <div className="mt-7 space-y-5">
-                {site.about.body.map((paragraph) => (
-                  <p key={paragraph} className="prose-quiet max-w-[54ch]">
-                    <EmphasizedText text={paragraph} />
-                  </p>
-                ))}
-                <p className="prose-quiet max-w-[54ch]">
-                  <EmphasizedText text={site.about.helps} />
+            <div className="mx-auto w-full max-w-6xl md:grid md:grid-cols-[minmax(0,0.48fr)_minmax(0,0.52fr)] md:gap-12 lg:gap-16">
+              <div className="relative z-[2] max-h-[calc(100svh-7rem)] overflow-y-auto pr-1 md:max-h-none md:overflow-visible">
+                <p className="eyebrow">{site.about.eyebrow}</p>
+                <p className="meta-label mt-3 text-muted">
+                  {site.about.base ?? ""}
                 </p>
-                <p className="max-w-[48ch] text-[0.95rem] text-reactor/90">
-                  <EmphasizedText text={site.about.proof} />
-                </p>
-              </div>
+                <SilverShineText
+                  as="h2"
+                  text={site.about.headline}
+                  className="section-title mt-4 text-[clamp(1.55rem,3.2vw,2.25rem)]"
+                />
 
-              <ul className="mt-8 flex flex-wrap gap-2">
-                {site.about.tags.map((tag) => (
-                  <li
-                    key={tag}
-                    className="display border border-seam px-3 py-1.5 text-[0.58rem] tracking-[0.16em] uppercase text-muted"
+                <div className="mt-5 space-y-4 md:mt-6 md:space-y-5">
+                  {site.about.body.map((paragraph) => (
+                    <p key={paragraph} className="prose-quiet max-w-[42ch]">
+                      <EmphasizedText text={paragraph} />
+                    </p>
+                  ))}
+                  {site.about.helps ? (
+                    <p className="prose-quiet max-w-[42ch]">
+                      <EmphasizedText text={site.about.helps} />
+                    </p>
+                  ) : null}
+                  {site.about.proof ? (
+                    <p className="max-w-[40ch] text-[0.92rem] text-reactor/90">
+                      <EmphasizedText text={site.about.proof} />
+                    </p>
+                  ) : null}
+                </div>
+
+                {(site.about.tags?.length ?? 0) > 0 ? (
+                  <ul className="mt-6 flex flex-wrap gap-2 md:mt-7">
+                    {site.about.tags.map((tag) => (
+                      <li
+                        key={tag}
+                        className="display border border-seam px-3 py-1.5 text-[0.58rem] tracking-[0.16em] uppercase text-muted"
+                      >
+                        {tag}
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+
+                {site.about.cta ? (
+                  <a
+                    href={`mailto:${site.email}`}
+                    className="focus-ring display mt-6 inline-flex items-center border border-seam-strong bg-foreground px-5 py-2.5 text-[0.7rem] font-semibold tracking-[0.18em] uppercase text-background transition-opacity hover:opacity-90 md:mt-7"
                   >
-                    {tag}
-                  </li>
-                ))}
-              </ul>
-
-              <a
-                href={`mailto:${site.email}`}
-                className="focus-ring display mt-8 inline-flex items-center border border-seam-strong bg-foreground px-5 py-2.5 text-[0.7rem] font-semibold tracking-[0.18em] uppercase text-background transition-opacity hover:opacity-90"
-              >
-                {site.about.cta}
-              </a>
+                    {site.about.cta}
+                  </a>
+                ) : null}
+              </div>
             </div>
           </motion.div>
 
@@ -375,96 +387,94 @@ export function About() {
             </g>
           </svg>
 
-          {/* Stage: Iron Man morph → featured project handoff */}
-          <div className="pointer-events-none absolute inset-x-0 top-[14%] bottom-[4%] z-[5] mx-auto flex w-full max-w-[96rem] items-center justify-center px-[clamp(1.25rem,5vw,4rem)]">
-            <div className="relative flex h-full w-full max-w-[min(90vw,52rem)] items-center justify-center">
+          {/* Stage: Iron Man morph (right) → featured project handoff */}
+          <div className="pointer-events-none absolute inset-x-0 top-[42%] bottom-[4%] z-[5] mx-auto flex w-full max-w-6xl items-end justify-center px-[clamp(1.25rem,5vw,4rem)] md:top-[14%] md:bottom-[4%] md:items-center md:justify-end lg:max-w-[96rem]">
+            <motion.div
+              aria-hidden
+              className="relative z-[1] h-[min(48vh,22rem)] w-full max-w-[min(70vw,18rem)] md:h-auto md:max-w-[min(48vw,28rem)]"
+              style={{
+                opacity: ironOpacity,
+                scale: ironScale,
+                visibility: ironVisibility,
+              }}
+            >
+              <ScrollMorphVideo
+                src={site.about.morphVideo}
+                progress={scrollYProgress}
+                aspectClass="aspect-[1080/1746]"
+                className="w-full"
+                active={ironActive}
+              />
+            </motion.div>
+
+            <motion.div
+              ref={featuredStageRef}
+              className="pointer-events-auto absolute inset-x-0 top-1/2 z-[5] mx-auto flex w-full max-w-[min(92vw,52rem)] -translate-y-1/2 flex-col gap-4 px-[clamp(1.25rem,5vw,4rem)] lg:gap-5"
+              style={{
+                opacity: featuredOpacity,
+                scale: featuredScale,
+                y: featuredY,
+              }}
+            >
               <motion.div
-                aria-hidden
-                className="relative z-[1] w-[min(42vw,220px)] lg:w-[min(48vw,28rem)]"
-                style={{
-                  opacity: ironOpacity,
-                  scale: ironScale,
-                  visibility: ironVisibility,
-                }}
+                className="max-w-[44rem] px-1 sm:px-2"
+                style={{ opacity: captionOpacity }}
               >
-                <ScrollMorphVideo
-                  src={site.about.morphVideo}
-                  progress={scrollYProgress}
-                  aspectClass="aspect-[1080/1746]"
-                  className="w-full"
-                  active={ironActive}
-                />
+                <p className="meta-label text-reactor">
+                  {site.featured.eyebrow}
+                </p>
+                <h3 className="display mt-2 text-[clamp(1.5rem,3.2vw,2.35rem)] font-semibold tracking-[0.06em] text-foreground">
+                  {site.featured.title}
+                </h3>
+                <p className="blurb mt-2 max-w-[46ch] text-[0.95rem] text-muted sm:text-[1.02rem]">
+                  <EmphasizedText text={site.featured.detail} />
+                </p>
               </motion.div>
 
-              <motion.div
-                ref={featuredStageRef}
-                className="pointer-events-auto absolute inset-x-0 top-1/2 z-[5] flex w-full -translate-y-1/2 flex-col gap-4 lg:gap-5"
-                style={{
-                  opacity: featuredOpacity,
-                  scale: featuredScale,
-                  y: featuredY,
-                }}
-              >
-                <motion.div
-                  className="max-w-[44rem] px-1 sm:px-2"
-                  style={{ opacity: captionOpacity }}
-                >
-                  <p className="meta-label text-reactor">
-                    {site.featured.eyebrow}
-                  </p>
-                  <h3 className="display mt-2 text-[clamp(1.5rem,3.2vw,2.35rem)] font-semibold tracking-[0.06em] text-foreground">
-                    {site.featured.title}
-                  </h3>
-                  <p className="blurb mt-2 max-w-[46ch] text-[0.95rem] text-muted sm:text-[1.02rem]">
-                    <EmphasizedText text={site.featured.detail} />
-                  </p>
-                </motion.div>
+              <div className="relative overflow-hidden border border-seam-strong bg-background/90 shadow-[0_0_0_1px_var(--reactor-soft)]">
+                <div className="relative aspect-[1168/784] w-full max-h-[min(52vh,28rem)] bg-black sm:max-h-none">
+                  <video
+                    ref={featuredVideoRef}
+                    className="absolute inset-0 h-full w-full object-cover"
+                    src={`${site.featured.video}?v=featured-audio2`}
+                    loop
+                    playsInline
+                    preload="auto"
+                    controls={isFullscreen}
+                    aria-label={`${site.featured.title} featured build`}
+                  />
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20"
+                  />
+                  <div className="hud-brackets pointer-events-none absolute inset-3 z-[2]" />
 
-                <div className="relative overflow-hidden border border-seam-strong bg-background/90 shadow-[0_0_0_1px_var(--reactor-soft)]">
-                  <div className="relative aspect-[1168/784] w-full max-h-[min(52vh,28rem)] bg-black sm:max-h-none">
-                    <video
-                      ref={featuredVideoRef}
-                      className="absolute inset-0 h-full w-full object-cover"
-                      src={`${site.featured.video}?v=featured-audio2`}
-                      loop
-                      playsInline
-                      preload="auto"
-                      controls={isFullscreen}
-                      aria-label={`${site.featured.title} featured build`}
-                    />
-                    <div
-                      aria-hidden
-                      className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20"
-                    />
-                    <div className="hud-brackets pointer-events-none absolute inset-3 z-[2]" />
-
-                    <div className="absolute top-3 right-3 z-[4] flex items-center gap-2">
-                      {!soundArmed ? (
-                        <button
-                          type="button"
-                          onClick={enableSound}
-                          className="focus-ring display border border-seam-strong bg-background/90 px-3 py-2 text-[0.58rem] tracking-[0.16em] uppercase text-foreground transition-colors hover:border-reactor"
-                        >
-                          Sound on
-                        </button>
-                      ) : null}
+                  <div className="absolute top-3 right-3 z-[4] flex items-center gap-2">
+                    {!soundArmed ? (
                       <button
                         type="button"
-                        onClick={toggleFullscreen}
+                        onClick={enableSound}
                         className="focus-ring display border border-seam-strong bg-background/90 px-3 py-2 text-[0.58rem] tracking-[0.16em] uppercase text-foreground transition-colors hover:border-reactor"
-                        aria-label={
-                          isFullscreen
-                            ? "Exit full screen"
-                            : "Expand featured video to full screen"
-                        }
                       >
-                        {isFullscreen ? "Exit" : "Full screen"}
+                        Sound on
                       </button>
-                    </div>
+                    ) : null}
+                    <button
+                      type="button"
+                      onClick={toggleFullscreen}
+                      className="focus-ring display border border-seam-strong bg-background/90 px-3 py-2 text-[0.58rem] tracking-[0.16em] uppercase text-foreground transition-colors hover:border-reactor"
+                      aria-label={
+                        isFullscreen
+                          ? "Exit full screen"
+                          : "Expand featured video to full screen"
+                      }
+                    >
+                      {isFullscreen ? "Exit" : "Full screen"}
+                    </button>
                   </div>
                 </div>
-              </motion.div>
-            </div>
+              </div>
+            </motion.div>
           </div>
         </div>
       </div>

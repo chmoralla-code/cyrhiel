@@ -22,9 +22,25 @@ function mergeSite(raw: unknown): SiteContent {
       body: Array.isArray((raw.about as { body?: unknown })?.body)
         ? ((raw.about as { body: string[] }).body as string[])
         : base.about.body,
+      base:
+        typeof (raw.about as { base?: unknown })?.base === "string"
+          ? (raw.about as { base: string }).base
+          : base.about.base,
+      helps:
+        typeof (raw.about as { helps?: unknown })?.helps === "string"
+          ? (raw.about as { helps: string }).helps
+          : base.about.helps,
+      proof:
+        typeof (raw.about as { proof?: unknown })?.proof === "string"
+          ? (raw.about as { proof: string }).proof
+          : base.about.proof,
       tags: Array.isArray((raw.about as { tags?: unknown })?.tags)
         ? ((raw.about as { tags: string[] }).tags as string[])
         : base.about.tags,
+      cta:
+        typeof (raw.about as { cta?: unknown })?.cta === "string"
+          ? (raw.about as { cta: string }).cta
+          : base.about.cta,
     },
     featured: {
       ...base.featured,
