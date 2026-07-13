@@ -46,3 +46,8 @@ next-env.d.ts
 # oversized local encodes (site uses hero-morph-alpha.webm)
 /public/videos/hero-morph-scrub.mp4
 /public/videos/_hero-*.png
+
+# supabase
+supabase/.temp/
+supabase/.branches/
+
