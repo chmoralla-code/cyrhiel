@@ -116,7 +116,7 @@ export const DEFAULT_SITE: SiteContent = {
       "AI",
     ],
     cta: "Brief me",
-    morphVideo: "/videos/about-morph-hd.mp4",
+    morphVideo: "/videos/featured-morph-alpha.webm",
   },
   featured: {
     eyebrow: "#1 SOFTWARE MADE SO FAR",

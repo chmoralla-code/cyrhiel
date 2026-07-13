@@ -7,6 +7,7 @@ import {
   useScroll,
   useTransform,
 } from "framer-motion";
+import { ScrollMorphVideo } from "@/components/scroll-morph-video";
 import { SilverShineText } from "@/components/silver-shine-text";
 import { EmphasizedText } from "@/components/emphasized-text";
 import { useSite } from "@/components/site-provider";
@@ -20,17 +21,48 @@ export function About() {
   const featuredVisibleRef = useRef(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [soundArmed, setSoundArmed] = useState(false);
+  const [morphActive, setMorphActive] = useState(true);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end end"],
   });
 
+  // 2nd morph sits over Profile, scrubs, then fades to reveal copy.
+  const morphOpacity = useTransform(
+    scrollYProgress,
+    [0, 0.32, 0.48],
+    [1, 1, 0],
+  );
+  const morphScale = useTransform(scrollYProgress, [0.3, 0.48], [1, 0.94]);
+  const morphVisibility = useTransform(morphOpacity, (value) =>
+    value <= 0.02 ? "hidden" : "visible",
+  );
+  const morphProgress = useTransform(
+    scrollYProgress,
+    [0.02, 0.46],
+    [0, 1],
+    { clamp: true },
+  );
+
+  const profileOpacity = useTransform(
+    scrollYProgress,
+    [0.3, 0.46],
+    [0, 1],
+  );
+  const profileY = useTransform(scrollYProgress, [0.3, 0.46], [18, 0]);
+
+  const featuredOpacity = useTransform(
+    scrollYProgress,
+    [0.4, 0.55],
+    [0, 1],
+  );
   const featuredScale = useTransform(
     scrollYProgress,
-    [0, 0.4, 0.75],
-    [0.98, 1.01, 1],
+    [0.4, 0.6, 0.8],
+    [0.97, 1.01, 1],
   );
+  const featuredY = useTransform(scrollYProgress, [0.4, 0.55], [22, 0]);
 
   const playFeatured = useCallback(async (withSound: boolean) => {
     const video = featuredVideoRef.current;
@@ -72,9 +104,11 @@ export function About() {
   }, [playFeatured]);
 
   useMotionValueEvent(scrollYProgress, "change", (value) => {
+    setMorphActive(value < 0.5);
+
     const video = featuredVideoRef.current;
     if (!video) return;
-    const visible = value >= 0 && value < 0.98;
+    const visible = value >= 0.42 && value < 0.98;
     if (visible) {
       if (!featuredVisibleRef.current) {
         featuredVisibleRef.current = true;
@@ -89,13 +123,11 @@ export function About() {
   useEffect(() => {
     const video = featuredVideoRef.current;
     if (!video) return;
-    featuredVisibleRef.current = true;
-    void playFeatured(false);
-    return () => {
-      video.pause();
-      featuredVisibleRef.current = false;
-    };
-  }, [playFeatured, site.featured.video]);
+    video.pause();
+    featuredVisibleRef.current = false;
+    soundArmedRef.current = false;
+    setSoundArmed(false);
+  }, [site.featured.video]);
 
   useEffect(() => {
     const onFullscreenChange = () => {
@@ -152,11 +184,14 @@ export function About() {
   }
 
   return (
-    <section ref={sectionRef} id="about" className="relative h-[200vh]">
+    <section ref={sectionRef} id="about" className="relative h-[260vh]">
       <div className="sticky top-14 h-[calc(100svh-3.5rem)] overflow-hidden">
         <div className="relative mx-auto flex h-full min-h-0 w-full max-w-6xl flex-col gap-3 px-[clamp(1.25rem,5vw,4rem)] py-3 md:grid md:grid-cols-[minmax(0,0.42fr)_minmax(0,0.58fr)] md:items-start md:gap-8 md:py-6 lg:gap-12 xl:gap-14">
-          {/* Identity — compact on mobile so featured never overlaps */}
-          <div className="relative z-10 min-h-0 shrink-0 overflow-y-auto pr-1 max-h-[min(34%,16rem)] sm:max-h-[min(38%,18rem)] md:max-h-[calc(100svh-5.5rem)] md:pt-2">
+          {/* Profile — revealed as the morph fades */}
+          <motion.div
+            className="relative z-10 min-h-0 shrink-0 overflow-y-auto pr-1 max-h-[min(34%,16rem)] sm:max-h-[min(38%,18rem)] md:max-h-[calc(100svh-5.5rem)] md:pt-2"
+            style={{ opacity: profileOpacity, y: profileY }}
+          >
             <p className="eyebrow">{site.about.eyebrow}</p>
             <p className="meta-label mt-1.5 text-muted md:mt-2 lg:mt-3">
               {site.about.base ?? ""}
@@ -206,14 +241,20 @@ export function About() {
                 {site.about.cta}
               </a>
             ) : null}
-          </div>
+          </motion.div>
 
-          {/* Highlighted Omni AI project — always visible, never absolute-overlaid on mobile */}
-          <div className="relative z-[5] flex min-h-0 flex-1 flex-col">
-            <motion.div
+          {/* Highlighted Omni AI — arrives after morph handoff */}
+          <motion.div
+            className="relative z-[5] flex min-h-0 flex-1 flex-col"
+            style={{
+              opacity: featuredOpacity,
+              scale: featuredScale,
+              y: featuredY,
+            }}
+          >
+            <div
               ref={featuredStageRef}
               className="pointer-events-auto flex min-h-0 w-full flex-1 flex-col gap-2 sm:gap-3 lg:gap-4"
-              style={{ scale: featuredScale }}
             >
               <div className="shrink-0">
                 <p className="meta-label text-reactor">
@@ -273,8 +314,29 @@ export function About() {
                   </div>
                 </div>
               </div>
-            </motion.div>
-          </div>
+            </div>
+          </motion.div>
+
+          {/* 2nd morph — starts in front of Profile, scrubs + fades on scroll */}
+          <motion.div
+            aria-hidden={!morphActive}
+            className="pointer-events-none absolute inset-0 z-20 flex items-end justify-center px-[clamp(1.25rem,5vw,4rem)] pb-3 md:items-center md:justify-start md:pb-6"
+            style={{
+              opacity: morphOpacity,
+              scale: morphScale,
+              visibility: morphVisibility,
+            }}
+          >
+            <div className="relative flex h-full max-h-full w-full max-w-[min(92vw,420px)] items-center justify-center md:max-w-[min(46%,28rem)]">
+              <ScrollMorphVideo
+                src={site.about.morphVideo}
+                progress={morphProgress}
+                aspectClass="aspect-[768/1168]"
+                className="max-h-[min(78vh,40rem)] w-auto !h-full"
+                active={morphActive}
+              />
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>
