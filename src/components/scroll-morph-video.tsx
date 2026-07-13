@@ -188,11 +188,11 @@ export function ScrollMorphVideo({
   return (
     <div
       ref={rootRef}
-      className={`relative ${aspectClass} mx-auto h-full max-h-full w-auto max-w-full overflow-hidden bg-transparent ${className}`}
+      className={`relative ${aspectClass} mx-auto max-h-full w-full overflow-visible bg-transparent ${className}`}
     >
       <video
         ref={videoRef}
-        className="relative z-[1] h-full w-full bg-transparent object-contain object-center [content-visibility:auto]"
+        className="relative z-[1] h-full w-full bg-transparent object-contain object-bottom md:object-center [content-visibility:auto]"
         muted
         playsInline
         preload="metadata"
