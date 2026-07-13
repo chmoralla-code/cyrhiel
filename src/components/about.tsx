@@ -1,13 +1,12 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   motion,
   useMotionValueEvent,
   useScroll,
   useTransform,
 } from "framer-motion";
-import { ScrollMorphVideo } from "@/components/scroll-morph-video";
 import { SilverShineText } from "@/components/silver-shine-text";
 import { EmphasizedText } from "@/components/emphasized-text";
 import { useSite } from "@/components/site-provider";
@@ -15,7 +14,12 @@ import { useSite } from "@/components/site-provider";
 export function About() {
   const site = useSite();
   const sectionRef = useRef<HTMLElement>(null);
-  const [featuredActive, setFeaturedActive] = useState(true);
+  const featuredStageRef = useRef<HTMLDivElement>(null);
+  const featuredVideoRef = useRef<HTMLVideoElement>(null);
+  const soundArmedRef = useRef(false);
+  const featuredVisibleRef = useRef(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [soundArmed, setSoundArmed] = useState(false);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -24,22 +28,132 @@ export function About() {
 
   const featuredScale = useTransform(
     scrollYProgress,
-    [0, 0.35, 0.7],
+    [0, 0.4, 0.75],
     [0.98, 1.02, 1],
   );
-  const featuredMorphProgress = useTransform(
-    scrollYProgress,
-    [0.05, 0.95],
-    [0, 1],
-    { clamp: true },
-  );
+
+  const playFeatured = useCallback(async (withSound: boolean) => {
+    const video = featuredVideoRef.current;
+    if (!video) return;
+    video.volume = 1;
+    video.muted = !withSound;
+    try {
+      await video.play();
+      if (withSound) {
+        soundArmedRef.current = true;
+        setSoundArmed(true);
+      }
+    } catch {
+      if (withSound) {
+        video.muted = true;
+        try {
+          await video.play();
+        } catch {
+          /* ignore */
+        }
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const unlock = () => {
+      soundArmedRef.current = true;
+      setSoundArmed(true);
+      if (featuredVisibleRef.current) {
+        void playFeatured(true);
+      }
+    };
+    window.addEventListener("pointerdown", unlock, { passive: true });
+    window.addEventListener("keydown", unlock);
+    return () => {
+      window.removeEventListener("pointerdown", unlock);
+      window.removeEventListener("keydown", unlock);
+    };
+  }, [playFeatured]);
 
   useMotionValueEvent(scrollYProgress, "change", (value) => {
-    setFeaturedActive(value < 0.98);
+    const video = featuredVideoRef.current;
+    if (!video) return;
+    // Play while About is the sticky focus; pause when nearly scrolled past.
+    const visible = value >= 0 && value < 0.98;
+    if (visible) {
+      if (!featuredVisibleRef.current) {
+        featuredVisibleRef.current = true;
+        void playFeatured(soundArmedRef.current);
+      }
+    } else if (featuredVisibleRef.current) {
+      featuredVisibleRef.current = false;
+      video.pause();
+    }
   });
 
+  useEffect(() => {
+    const video = featuredVideoRef.current;
+    if (!video) return;
+    featuredVisibleRef.current = true;
+    void playFeatured(false);
+    return () => {
+      video.pause();
+      featuredVisibleRef.current = false;
+    };
+  }, [playFeatured, site.featured.video]);
+
+  useEffect(() => {
+    const onFullscreenChange = () => {
+      const doc = document as Document & {
+        webkitFullscreenElement?: Element | null;
+      };
+      const active =
+        document.fullscreenElement === featuredStageRef.current ||
+        doc.webkitFullscreenElement === featuredStageRef.current;
+      setIsFullscreen(Boolean(active));
+    };
+    document.addEventListener("fullscreenchange", onFullscreenChange);
+    document.addEventListener("webkitfullscreenchange", onFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", onFullscreenChange);
+      document.removeEventListener(
+        "webkitfullscreenchange",
+        onFullscreenChange,
+      );
+    };
+  }, []);
+
+  async function toggleFullscreen() {
+    const stage = featuredStageRef.current;
+    if (!stage) return;
+
+    const doc = document as Document & {
+      webkitFullscreenElement?: Element | null;
+      webkitExitFullscreen?: () => Promise<void> | void;
+    };
+    const el = stage as HTMLDivElement & {
+      webkitRequestFullscreen?: () => Promise<void> | void;
+    };
+
+    const active =
+      document.fullscreenElement === stage ||
+      doc.webkitFullscreenElement === stage;
+
+    if (active) {
+      if (document.exitFullscreen) await document.exitFullscreen();
+      else if (doc.webkitExitFullscreen) await doc.webkitExitFullscreen();
+      return;
+    }
+
+    if (stage.requestFullscreen) await stage.requestFullscreen();
+    else if (el.webkitRequestFullscreen) await el.webkitRequestFullscreen();
+    await playFeatured(true);
+  }
+
+  async function enableSound() {
+    soundArmedRef.current = true;
+    setSoundArmed(true);
+    await playFeatured(true);
+  }
+
   return (
-    <section ref={sectionRef} id="about" className="relative h-[220vh]">
+    <section ref={sectionRef} id="about" className="relative h-[180vh]">
       <div className="sticky top-14 h-[calc(100svh-3.5rem)] overflow-hidden">
         <div className="relative mx-auto flex h-full w-full max-w-6xl flex-col gap-4 px-[clamp(1.25rem,5vw,4rem)] py-4 md:grid md:grid-cols-[minmax(0,0.42fr)_minmax(0,0.58fr)] md:items-start md:gap-8 md:py-6 lg:gap-12 xl:gap-14">
           {/* Identity — stays visible beside the highlighted build */}
@@ -95,10 +209,11 @@ export function About() {
             ) : null}
           </div>
 
-          {/* Featured scroll-morph stage */}
+          {/* Highlighted Omni AI project */}
           <div className="relative z-[5] min-h-0 flex-1">
             <div className="relative flex h-full min-h-[38vh] items-start justify-center pt-2 md:min-h-[calc(100svh-6rem)] md:items-center md:pt-0">
               <motion.div
+                ref={featuredStageRef}
                 className="pointer-events-auto relative z-[5] flex w-full flex-col justify-center gap-3 lg:gap-4"
                 style={{ scale: featuredScale }}
               >
@@ -114,14 +229,49 @@ export function About() {
                   </p>
                 </div>
 
-                <div className="relative mx-auto flex w-full max-w-[min(100%,560px)] items-center justify-center md:max-w-[min(100%,620px)]">
-                  <ScrollMorphVideo
-                    src={site.featured.video}
-                    progress={featuredMorphProgress}
-                    aspectClass="aspect-[768/1168]"
-                    className="max-h-[min(58vh,32rem)] w-auto !h-full md:max-h-[min(68vh,38rem)]"
-                    active={featuredActive}
-                  />
+                <div className="relative overflow-hidden border border-seam-strong bg-background/90 shadow-[0_0_0_1px_var(--reactor-soft)]">
+                  <div className="relative aspect-[1168/784] w-full max-h-[min(48vh,28rem)] bg-black lg:max-h-[min(58vh,34rem)]">
+                    <video
+                      ref={featuredVideoRef}
+                      className="absolute inset-0 h-full w-full object-cover"
+                      src={`${site.featured.video}?v=featured-restore`}
+                      loop
+                      playsInline
+                      preload="auto"
+                      muted
+                      controls={isFullscreen}
+                      aria-label={`${site.featured.title} featured build`}
+                    />
+                    <div
+                      aria-hidden
+                      className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20"
+                    />
+                    <div className="hud-brackets pointer-events-none absolute inset-3 z-[2]" />
+
+                    <div className="absolute top-3 right-3 z-[4] flex items-center gap-2">
+                      {!soundArmed ? (
+                        <button
+                          type="button"
+                          onClick={enableSound}
+                          className="focus-ring display border border-seam-strong bg-background/90 px-3 py-2 text-[0.58rem] tracking-[0.16em] uppercase text-foreground transition-colors hover:border-reactor"
+                        >
+                          Sound on
+                        </button>
+                      ) : null}
+                      <button
+                        type="button"
+                        onClick={toggleFullscreen}
+                        className="focus-ring display border border-seam-strong bg-background/90 px-3 py-2 text-[0.58rem] tracking-[0.16em] uppercase text-foreground transition-colors hover:border-reactor"
+                        aria-label={
+                          isFullscreen
+                            ? "Exit full screen"
+                            : "Expand featured video to full screen"
+                        }
+                      >
+                        {isFullscreen ? "Exit" : "Full screen"}
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             </div>
