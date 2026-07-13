@@ -128,7 +128,6 @@ export function BackgroundMusicProvider({ children }: { children: ReactNode }) {
     if (muted) {
       audio.muted = true;
       audio.pause();
-      setNeedsUnlock(false);
       return;
     }
 
