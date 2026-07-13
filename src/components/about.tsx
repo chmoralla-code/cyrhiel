@@ -28,38 +28,38 @@ export function About() {
     offset: ["start start", "end end"],
   });
 
-  // Morph covers profile first, scrubs, then fades to reveal copy.
+  // Morph covers profile first, scrubs, then hard-fades so copy stays readable.
   const morphProgress = useTransform(
     scrollYProgress,
-    [0, 0.4],
+    [0, 0.38],
     [0, 1],
     { clamp: true },
   );
   const morphOpacity = useTransform(
     scrollYProgress,
-    [0, 0.3, 0.42, 0.5],
-    [1, 1, 0.2, 0],
+    [0, 0.26, 0.36, 0.42],
+    [1, 1, 0.12, 0],
   );
-  const morphScale = useTransform(scrollYProgress, [0.28, 0.48], [1, 0.94]);
+  const morphScale = useTransform(scrollYProgress, [0.24, 0.4], [1, 0.96]);
   const morphVisibility = useTransform(morphOpacity, (v) =>
-    v <= 0.02 ? "hidden" : "visible",
+    v <= 0.04 ? "hidden" : "visible",
   );
   const profileOpacity = useTransform(
     scrollYProgress,
-    [0.28, 0.4, 0.5],
-    [0, 0.55, 1],
+    [0.3, 0.38, 0.44],
+    [0, 0.85, 1],
   );
-  const profileY = useTransform(scrollYProgress, [0.3, 0.48], [18, 0]);
+  const profileY = useTransform(scrollYProgress, [0.3, 0.42], [12, 0]);
 
-  const featuredScale = useTransform(
+  const featuredVideoScale = useTransform(
     scrollYProgress,
-    [0, 0.4, 0.75],
-    [0.98, 1.01, 1],
+    [0.4, 0.7],
+    [1, 1.01],
   );
   const featuredOpacity = useTransform(
     scrollYProgress,
-    [0.35, 0.48, 0.58],
-    [0.35, 0.85, 1],
+    [0.32, 0.42, 0.5],
+    [0.2, 0.95, 1],
   );
 
   const playFeatured = useCallback(async (withSound: boolean) => {
@@ -102,11 +102,11 @@ export function About() {
   }, [playFeatured]);
 
   useMotionValueEvent(scrollYProgress, "change", (value) => {
-    setMorphActive(value < 0.52);
+    setMorphActive(value < 0.44);
 
     const video = featuredVideoRef.current;
     if (!video) return;
-    const visible = value >= 0.35 && value < 0.98;
+    const visible = value >= 0.34 && value < 0.98;
     if (visible) {
       if (!featuredVisibleRef.current) {
         featuredVisibleRef.current = true;
@@ -186,9 +186,9 @@ export function About() {
       <div className="sticky top-14 h-[calc(100svh-3.5rem)] overflow-hidden">
         <div className="relative mx-auto flex h-full min-h-0 w-full max-w-6xl flex-col gap-3 px-[clamp(1.25rem,5vw,4rem)] py-3 md:grid md:grid-cols-[minmax(0,0.42fr)_minmax(0,0.58fr)] md:items-start md:gap-8 md:py-6 lg:gap-12 xl:gap-14">
           {/* Profile column — morph sits in front, then fades to reveal copy */}
-          <div className="relative z-10 min-h-0 flex-[1_1_48%] overflow-hidden md:flex-none md:h-[calc(100svh-5.5rem)] md:max-h-[calc(100svh-5.5rem)] md:overflow-visible md:pt-2">
+          <div className="relative z-10 min-h-0 flex-[1_1_42%] overflow-hidden md:flex-none md:h-[calc(100svh-5.5rem)] md:max-h-[calc(100svh-5.5rem)] md:overflow-visible md:pt-2">
             <motion.div
-              className="relative z-10 h-full min-h-0 overflow-y-auto pr-1"
+              className="relative z-10 h-full min-h-0 overflow-y-auto bg-background/80 pr-1 backdrop-blur-[2px] md:bg-transparent md:backdrop-blur-none"
               style={{ opacity: profileOpacity, y: profileY }}
             >
               <p className="eyebrow">{site.about.eyebrow}</p>
@@ -198,32 +198,32 @@ export function About() {
               <SilverShineText
                 as="h2"
                 text={site.about.headline}
-                className="section-title mt-2 text-[clamp(1.3rem,2.8vw,2.15rem)] md:mt-3 lg:mt-4"
+                className="section-title relative z-[1] mt-2 text-[clamp(1.15rem,5vw,2.15rem)] leading-[1.15] md:mt-3 md:text-[clamp(1.3rem,2.8vw,2.15rem)] lg:mt-4"
               />
 
-              <div className="mt-2.5 space-y-3 sm:space-y-3.5 md:mt-4 lg:mt-5 lg:space-y-4">
+              <div className="relative z-[1] mt-2.5 space-y-2.5 sm:space-y-3.5 md:mt-4 lg:mt-5 lg:space-y-4">
                 {site.about.body.map((paragraph) => (
                   <p
                     key={paragraph}
-                    className="prose-quiet max-w-[40ch] text-[0.9rem] sm:text-[0.95rem] lg:text-[1rem]"
+                    className="prose-quiet max-w-[40ch] text-[0.88rem] sm:text-[0.95rem] lg:text-[1rem]"
                   >
                     <EmphasizedText text={paragraph} />
                   </p>
                 ))}
                 {site.about.helps ? (
-                  <p className="prose-quiet max-w-[40ch] text-[0.9rem] sm:text-[0.95rem] lg:text-[1rem]">
+                  <p className="prose-quiet max-w-[40ch] text-[0.88rem] sm:text-[0.95rem] lg:text-[1rem]">
                     <EmphasizedText text={site.about.helps} />
                   </p>
                 ) : null}
                 {site.about.proof ? (
-                  <p className="max-w-[38ch] text-[0.88rem] text-reactor/90 sm:text-[0.9rem] lg:text-[0.95rem]">
+                  <p className="max-w-[38ch] text-[0.86rem] text-reactor/90 sm:text-[0.9rem] lg:text-[0.95rem]">
                     <EmphasizedText text={site.about.proof} />
                   </p>
                 ) : null}
               </div>
 
               {(site.about.tags?.length ?? 0) > 0 ? (
-                <ul className="mt-3 flex flex-wrap gap-2 md:mt-5">
+                <ul className="relative z-[1] mt-3 flex flex-wrap gap-2 md:mt-5">
                   {site.about.tags.map((tag) => (
                     <li
                       key={tag}
@@ -238,7 +238,7 @@ export function About() {
               {site.about.cta ? (
                 <a
                   href={`mailto:${site.email}`}
-                  className="focus-ring display mt-3 inline-flex items-center border border-seam-strong bg-foreground px-3.5 py-1.5 text-[0.6rem] font-semibold tracking-[0.18em] uppercase text-background transition-opacity hover:opacity-90 sm:mt-5 sm:px-4 sm:py-2 sm:text-[0.65rem] lg:mt-6 lg:px-5 lg:py-2.5 lg:text-[0.7rem]"
+                  className="focus-ring display relative z-[1] mt-3 inline-flex items-center border border-seam-strong bg-foreground px-3.5 py-1.5 text-[0.6rem] font-semibold tracking-[0.18em] uppercase text-background transition-opacity hover:opacity-90 sm:mt-5 sm:px-4 sm:py-2 sm:text-[0.65rem] lg:mt-6 lg:px-5 lg:py-2.5 lg:text-[0.7rem]"
                 >
                   {site.about.cta}
                 </a>
@@ -247,7 +247,7 @@ export function About() {
 
             <motion.div
               aria-hidden
-              className="pointer-events-none absolute inset-0 z-20 flex items-end justify-center bg-gradient-to-b from-background/70 via-background/40 to-background/80 pb-1 md:items-center md:bg-transparent md:pb-0"
+              className="pointer-events-none absolute inset-0 z-20 flex items-end justify-center bg-gradient-to-b from-background/80 via-background/55 to-background/90 pb-1 md:items-center md:bg-transparent md:pb-0"
               style={{
                 opacity: morphOpacity,
                 scale: morphScale,
@@ -258,24 +258,24 @@ export function About() {
                 src={site.about.morphVideo}
                 progress={morphProgress}
                 aspectClass="aspect-[768/1168]"
-                className="max-h-[min(52vh,28rem)] w-[min(100%,280px)] !h-full md:max-h-[min(78vh,40rem)] md:w-[min(100%,380px)]"
+                className="max-h-[min(46vh,24rem)] w-[min(100%,260px)] !h-full md:max-h-[min(78vh,40rem)] md:w-[min(100%,380px)]"
                 active={morphActive}
               />
             </motion.div>
           </div>
 
-          {/* Highlighted Omni AI project */}
-          <div className="relative z-[5] flex min-h-0 flex-1 flex-col">
+          {/* Highlighted Omni AI project — caption never scaled with video */}
+          <div className="relative z-[5] flex min-h-0 flex-1 flex-col overflow-hidden">
             <motion.div
               ref={featuredStageRef}
               className="pointer-events-auto flex min-h-0 w-full flex-1 flex-col gap-2 sm:gap-3 lg:gap-4"
-              style={{ scale: featuredScale, opacity: featuredOpacity }}
+              style={{ opacity: featuredOpacity }}
             >
-              <div className="shrink-0">
+              <div className="relative z-10 shrink-0 bg-background/90 pb-1 backdrop-blur-[1px] md:bg-transparent md:backdrop-blur-none">
                 <p className="meta-label text-reactor">
                   {site.featured.eyebrow}
                 </p>
-                <h3 className="display mt-1 text-[clamp(1.15rem,4.2vw,1.85rem)] font-semibold tracking-[0.06em] text-foreground sm:mt-1.5 lg:mt-2">
+                <h3 className="display mt-1 text-[clamp(1.15rem,4.2vw,1.85rem)] font-semibold leading-tight tracking-[0.06em] text-foreground sm:mt-1.5 lg:mt-2">
                   {site.featured.title}
                 </h3>
                 <p className="blurb mt-1 line-clamp-2 max-w-[42ch] text-[0.82rem] text-muted sm:mt-1.5 sm:line-clamp-none sm:text-[0.88rem] lg:mt-2 lg:text-[0.95rem]">
@@ -283,9 +283,12 @@ export function About() {
                 </p>
               </div>
 
-              <div className="relative mx-auto flex min-h-0 w-full max-w-full flex-1 items-center justify-center">
-                <div className="relative w-full overflow-hidden border border-seam-strong bg-background/90 shadow-[0_0_0_1px_var(--reactor-soft)]">
-                  <div className="relative aspect-[1168/784] w-full max-h-[min(42vh,24rem)] bg-black sm:max-h-[min(48vh,28rem)] md:max-h-[min(58vh,34rem)]">
+              <div className="relative z-0 mx-auto flex min-h-0 w-full max-w-full flex-1 items-start justify-center overflow-hidden pt-0.5">
+                <motion.div
+                  className="relative w-full origin-top overflow-hidden border border-seam-strong bg-background/90 shadow-[0_0_0_1px_var(--reactor-soft)]"
+                  style={{ scale: featuredVideoScale }}
+                >
+                  <div className="relative aspect-[1168/784] w-full max-h-[min(32vh,18rem)] bg-black sm:max-h-[min(40vh,22rem)] md:max-h-[min(58vh,34rem)]">
                     <video
                       ref={featuredVideoRef}
                       className="absolute inset-0 h-full w-full object-cover object-center"
@@ -327,7 +330,7 @@ export function About() {
                       </button>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               </div>
             </motion.div>
           </div>
