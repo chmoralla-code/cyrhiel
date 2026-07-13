@@ -29,7 +29,7 @@ export function About() {
   const featuredScale = useTransform(
     scrollYProgress,
     [0, 0.4, 0.75],
-    [0.98, 1.02, 1],
+    [0.98, 1.01, 1],
   );
 
   const playFeatured = useCallback(async (withSound: boolean) => {
@@ -74,7 +74,6 @@ export function About() {
   useMotionValueEvent(scrollYProgress, "change", (value) => {
     const video = featuredVideoRef.current;
     if (!video) return;
-    // Play while About is the sticky focus; pause when nearly scrolled past.
     const visible = value >= 0 && value < 0.98;
     if (visible) {
       if (!featuredVisibleRef.current) {
@@ -153,22 +152,22 @@ export function About() {
   }
 
   return (
-    <section ref={sectionRef} id="about" className="relative h-[180vh]">
+    <section ref={sectionRef} id="about" className="relative h-[200vh]">
       <div className="sticky top-14 h-[calc(100svh-3.5rem)] overflow-hidden">
-        <div className="relative mx-auto flex h-full w-full max-w-6xl flex-col gap-4 px-[clamp(1.25rem,5vw,4rem)] py-4 md:grid md:grid-cols-[minmax(0,0.42fr)_minmax(0,0.58fr)] md:items-start md:gap-8 md:py-6 lg:gap-12 xl:gap-14">
-          {/* Identity — stays visible beside the highlighted build */}
-          <div className="relative z-10 min-h-0 shrink-0 overflow-y-auto pr-1 max-h-[min(46%,22rem)] md:max-h-[calc(100svh-5.5rem)] md:pt-2">
+        <div className="relative mx-auto flex h-full min-h-0 w-full max-w-6xl flex-col gap-3 px-[clamp(1.25rem,5vw,4rem)] py-3 md:grid md:grid-cols-[minmax(0,0.42fr)_minmax(0,0.58fr)] md:items-start md:gap-8 md:py-6 lg:gap-12 xl:gap-14">
+          {/* Identity — compact on mobile so featured never overlaps */}
+          <div className="relative z-10 min-h-0 shrink-0 overflow-y-auto pr-1 max-h-[min(34%,16rem)] sm:max-h-[min(38%,18rem)] md:max-h-[calc(100svh-5.5rem)] md:pt-2">
             <p className="eyebrow">{site.about.eyebrow}</p>
-            <p className="meta-label mt-2 text-muted lg:mt-3">
+            <p className="meta-label mt-1.5 text-muted md:mt-2 lg:mt-3">
               {site.about.base ?? ""}
             </p>
             <SilverShineText
               as="h2"
               text={site.about.headline}
-              className="section-title mt-3 text-[clamp(1.45rem,2.8vw,2.15rem)] lg:mt-4"
+              className="section-title mt-2 text-[clamp(1.3rem,2.8vw,2.15rem)] md:mt-3 lg:mt-4"
             />
 
-            <div className="mt-4 space-y-3.5 lg:mt-5 lg:space-y-4">
+            <div className="mt-2.5 hidden space-y-3.5 sm:block md:mt-4 lg:mt-5 lg:space-y-4">
               {site.about.body.map((paragraph) => (
                 <p key={paragraph} className="prose-quiet max-w-[40ch] text-[0.95rem] lg:text-[1rem]">
                   <EmphasizedText text={paragraph} />
@@ -187,7 +186,7 @@ export function About() {
             </div>
 
             {(site.about.tags?.length ?? 0) > 0 ? (
-              <ul className="mt-5 flex flex-wrap gap-2">
+              <ul className="mt-3 hidden flex-wrap gap-2 sm:flex md:mt-5">
                 {site.about.tags.map((tag) => (
                   <li
                     key={tag}
@@ -202,39 +201,39 @@ export function About() {
             {site.about.cta ? (
               <a
                 href={`mailto:${site.email}`}
-                className="focus-ring display mt-5 inline-flex items-center border border-seam-strong bg-foreground px-4 py-2 text-[0.65rem] font-semibold tracking-[0.18em] uppercase text-background transition-opacity hover:opacity-90 lg:mt-6 lg:px-5 lg:py-2.5 lg:text-[0.7rem]"
+                className="focus-ring display mt-3 inline-flex items-center border border-seam-strong bg-foreground px-3.5 py-1.5 text-[0.6rem] font-semibold tracking-[0.18em] uppercase text-background transition-opacity hover:opacity-90 sm:mt-5 sm:px-4 sm:py-2 sm:text-[0.65rem] lg:mt-6 lg:px-5 lg:py-2.5 lg:text-[0.7rem]"
               >
                 {site.about.cta}
               </a>
             ) : null}
           </div>
 
-          {/* Highlighted Omni AI project */}
-          <div className="relative z-[5] min-h-0 flex-1">
-            <div className="relative flex h-full min-h-[38vh] items-start justify-center pt-2 md:min-h-[calc(100svh-6rem)] md:items-center md:pt-0">
-              <motion.div
-                ref={featuredStageRef}
-                className="pointer-events-auto relative z-[5] flex w-full flex-col justify-center gap-3 lg:gap-4"
-                style={{ scale: featuredScale }}
-              >
-                <div>
-                  <p className="meta-label text-reactor">
-                    {site.featured.eyebrow}
-                  </p>
-                  <h3 className="display mt-1.5 text-[clamp(1.25rem,2.6vw,1.85rem)] font-semibold tracking-[0.06em] text-foreground lg:mt-2">
-                    {site.featured.title}
-                  </h3>
-                  <p className="blurb mt-1.5 max-w-[42ch] text-[0.88rem] text-muted lg:mt-2 lg:text-[0.95rem]">
-                    <EmphasizedText text={site.featured.detail} />
-                  </p>
-                </div>
+          {/* Highlighted Omni AI project — always visible, never absolute-overlaid on mobile */}
+          <div className="relative z-[5] flex min-h-0 flex-1 flex-col">
+            <motion.div
+              ref={featuredStageRef}
+              className="pointer-events-auto flex min-h-0 w-full flex-1 flex-col gap-2 sm:gap-3 lg:gap-4"
+              style={{ scale: featuredScale }}
+            >
+              <div className="shrink-0">
+                <p className="meta-label text-reactor">
+                  {site.featured.eyebrow}
+                </p>
+                <h3 className="display mt-1 text-[clamp(1.15rem,4.2vw,1.85rem)] font-semibold tracking-[0.06em] text-foreground sm:mt-1.5 lg:mt-2">
+                  {site.featured.title}
+                </h3>
+                <p className="blurb mt-1 line-clamp-2 max-w-[42ch] text-[0.82rem] text-muted sm:mt-1.5 sm:line-clamp-none sm:text-[0.88rem] lg:mt-2 lg:text-[0.95rem]">
+                  <EmphasizedText text={site.featured.detail} />
+                </p>
+              </div>
 
-                <div className="relative overflow-hidden border border-seam-strong bg-background/90 shadow-[0_0_0_1px_var(--reactor-soft)]">
-                  <div className="relative aspect-[1168/784] w-full max-h-[min(48vh,28rem)] bg-black lg:max-h-[min(58vh,34rem)]">
+              <div className="relative mx-auto flex min-h-0 w-full max-w-[min(100%,22rem)] flex-1 items-center justify-center md:max-w-[min(100%,26rem)]">
+                <div className="relative h-full max-h-full w-full overflow-hidden border border-seam-strong bg-background/90 shadow-[0_0_0_1px_var(--reactor-soft)]">
+                  <div className="relative mx-auto aspect-[592/1280] h-full max-h-[min(48vh,26rem)] w-auto max-w-full bg-black sm:max-h-[min(52vh,30rem)] md:max-h-[min(62vh,36rem)]">
                     <video
                       ref={featuredVideoRef}
-                      className="absolute inset-0 h-full w-full object-cover"
-                      src={`${site.featured.video}?v=featured-restore`}
+                      className="absolute inset-0 h-full w-full object-cover object-center"
+                      src={`${site.featured.video}?v=featured-phone1`}
                       loop
                       playsInline
                       preload="auto"
@@ -244,16 +243,16 @@ export function About() {
                     />
                     <div
                       aria-hidden
-                      className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20"
+                      className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/15"
                     />
-                    <div className="hud-brackets pointer-events-none absolute inset-3 z-[2]" />
+                    <div className="hud-brackets pointer-events-none absolute inset-2 z-[2] sm:inset-3" />
 
-                    <div className="absolute top-3 right-3 z-[4] flex items-center gap-2">
+                    <div className="absolute top-2 right-2 z-[4] flex items-center gap-1.5 sm:top-3 sm:right-3 sm:gap-2">
                       {!soundArmed ? (
                         <button
                           type="button"
                           onClick={enableSound}
-                          className="focus-ring display border border-seam-strong bg-background/90 px-3 py-2 text-[0.58rem] tracking-[0.16em] uppercase text-foreground transition-colors hover:border-reactor"
+                          className="focus-ring display border border-seam-strong bg-background/90 px-2.5 py-1.5 text-[0.52rem] tracking-[0.16em] uppercase text-foreground transition-colors hover:border-reactor sm:px-3 sm:py-2 sm:text-[0.58rem]"
                         >
                           Sound on
                         </button>
@@ -261,7 +260,7 @@ export function About() {
                       <button
                         type="button"
                         onClick={toggleFullscreen}
-                        className="focus-ring display border border-seam-strong bg-background/90 px-3 py-2 text-[0.58rem] tracking-[0.16em] uppercase text-foreground transition-colors hover:border-reactor"
+                        className="focus-ring display border border-seam-strong bg-background/90 px-2.5 py-1.5 text-[0.52rem] tracking-[0.16em] uppercase text-foreground transition-colors hover:border-reactor sm:px-3 sm:py-2 sm:text-[0.58rem]"
                         aria-label={
                           isFullscreen
                             ? "Exit full screen"
@@ -273,8 +272,8 @@ export function About() {
                     </div>
                   </div>
                 </div>
-              </motion.div>
-            </div>
+              </div>
+            </motion.div>
           </div>
         </div>
       </div>
