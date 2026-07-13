@@ -198,7 +198,7 @@ export function About() {
               <SilverShineText
                 as="h2"
                 text={site.about.headline}
-                className="section-title relative z-[1] mt-2 text-[clamp(1.15rem,5vw,2.15rem)] leading-[1.15] md:mt-3 md:text-[clamp(1.3rem,2.8vw,2.15rem)] lg:mt-4"
+                className="section-title relative z-[1] mt-2 text-[clamp(1.15rem,5vw,2.15rem)] leading-[1.28] md:mt-3 md:text-[clamp(1.3rem,2.8vw,2.15rem)] md:leading-[1.15] lg:mt-4"
               />
 
               <div className="relative z-[1] mt-2.5 space-y-2.5 sm:space-y-3.5 md:mt-4 lg:mt-5 lg:space-y-4">
