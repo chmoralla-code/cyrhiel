@@ -14,7 +14,6 @@ import {
 type BackgroundMusicContextValue = {
   playing: boolean;
   muted: boolean;
-  blocked: boolean;
   toggleMute: () => void;
 };
 
@@ -37,7 +36,6 @@ export function BackgroundMusicProvider({ children }: { children: ReactNode }) {
   const mutedRef = useRef(false);
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
-  const [blocked, setBlocked] = useState(false);
 
   const tryPlay = useCallback(async () => {
     const audio = audioRef.current;
@@ -46,12 +44,8 @@ export function BackgroundMusicProvider({ children }: { children: ReactNode }) {
     audio.muted = false;
     try {
       await audio.play();
-      setPlaying(true);
-      setBlocked(false);
       return true;
     } catch {
-      setPlaying(false);
-      setBlocked(true);
       return false;
     }
   }, []);
@@ -68,16 +62,21 @@ export function BackgroundMusicProvider({ children }: { children: ReactNode }) {
     audio.addEventListener("play", onPlay);
     audio.addEventListener("pause", onPause);
 
-    void tryPlay();
-
     const unlock = () => {
       if (mutedRef.current) return;
       void tryPlay();
     };
+
+    // Defer autoplay attempt so it isn't a sync setState-in-effect.
+    const boot = window.setTimeout(() => {
+      void tryPlay();
+    }, 0);
+
     window.addEventListener("pointerdown", unlock, { passive: true });
     window.addEventListener("keydown", unlock);
 
     return () => {
+      window.clearTimeout(boot);
       window.removeEventListener("pointerdown", unlock);
       window.removeEventListener("keydown", unlock);
       audio.removeEventListener("play", onPlay);
@@ -93,13 +92,18 @@ export function BackgroundMusicProvider({ children }: { children: ReactNode }) {
     mutedRef.current = muted;
     const audio = audioRef.current;
     if (!audio) return;
+
     if (muted) {
-      audio.pause();
       audio.muted = true;
-      setPlaying(false);
+      audio.pause();
       return;
     }
-    void tryPlay();
+
+    audio.muted = false;
+    const id = window.setTimeout(() => {
+      void tryPlay();
+    }, 0);
+    return () => window.clearTimeout(id);
   }, [muted, tryPlay]);
 
   const toggleMute = useCallback(() => {
@@ -107,8 +111,8 @@ export function BackgroundMusicProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ playing, muted, blocked, toggleMute }),
-    [playing, muted, blocked, toggleMute],
+    () => ({ playing, muted, toggleMute }),
+    [playing, muted, toggleMute],
   );
 
   return (
