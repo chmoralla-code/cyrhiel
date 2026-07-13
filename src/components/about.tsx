@@ -283,13 +283,13 @@ export function About() {
                 </p>
               </div>
 
-              <div className="relative mx-auto flex min-h-0 w-full max-w-[min(100%,22rem)] flex-1 items-center justify-center md:max-w-[min(100%,26rem)]">
-                <div className="relative h-full max-h-full w-full overflow-hidden border border-seam-strong bg-background/90 shadow-[0_0_0_1px_var(--reactor-soft)]">
-                  <div className="relative mx-auto aspect-[592/1280] h-full max-h-[min(42vh,24rem)] w-auto max-w-full bg-black sm:max-h-[min(48vh,28rem)] md:max-h-[min(62vh,36rem)]">
+              <div className="relative mx-auto flex min-h-0 w-full max-w-full flex-1 items-center justify-center">
+                <div className="relative w-full overflow-hidden border border-seam-strong bg-background/90 shadow-[0_0_0_1px_var(--reactor-soft)]">
+                  <div className="relative aspect-[1168/784] w-full max-h-[min(42vh,24rem)] bg-black sm:max-h-[min(48vh,28rem)] md:max-h-[min(58vh,34rem)]">
                     <video
                       ref={featuredVideoRef}
                       className="absolute inset-0 h-full w-full object-cover object-center"
-                      src={`${site.featured.video}?v=featured-phone1`}
+                      src={`${site.featured.video}?v=featured-restore2`}
                       loop
                       playsInline
                       preload="auto"
