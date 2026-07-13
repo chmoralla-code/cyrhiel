@@ -105,31 +105,31 @@ export function About() {
     [0, 0.48, 0.42, 0],
   );
 
-  // Iron Man finishes the morph, then fully hides before the featured build takes over.
+  // Iron Man finishes the morph, then yields to the featured build.
   const ironOpacity = useTransform(
     scrollYProgress,
-    [0, 0.72, 0.78, 0.84],
+    [0, 0.45, 0.52, 0.58],
     [1, 1, 0.15, 0],
   );
-  const ironScale = useTransform(scrollYProgress, [0.72, 0.84], [1, 0.9]);
+  const ironScale = useTransform(scrollYProgress, [0.45, 0.58], [1, 0.9]);
   const ironVisibility = useTransform(ironOpacity, (value) =>
     value <= 0.01 ? "hidden" : "visible",
   );
-  // Profile stays fully visible beside the featured build.
+  // Featured arrives mid-scroll so Profile + video hold side-by-side longer.
   const featuredOpacity = useTransform(
     scrollYProgress,
-    [0.8, 0.88, 1],
+    [0.5, 0.58, 0.66],
     [0, 0.92, 1],
   );
   const featuredScale = useTransform(
     scrollYProgress,
-    [0.8, 0.92, 1],
+    [0.5, 0.62, 0.7],
     [0.94, 1.01, 1],
   );
-  const featuredY = useTransform(scrollYProgress, [0.8, 0.92], [28, 0]);
+  const featuredY = useTransform(scrollYProgress, [0.5, 0.62], [28, 0]);
   const captionOpacity = useTransform(
     scrollYProgress,
-    [0.84, 0.92, 1],
+    [0.54, 0.62, 0.7],
     [0, 0.95, 1],
   );
 
@@ -175,10 +175,10 @@ export function About() {
   }, [playFeatured]);
 
   useMotionValueEvent(scrollYProgress, "change", (value) => {
-    setIronActive(value < 0.84);
+    setIronActive(value < 0.58);
     const video = featuredVideoRef.current;
     if (!video) return;
-    const visible = value >= 0.8;
+    const visible = value >= 0.5;
     if (visible) {
       if (!featuredVisibleRef.current) {
         featuredVisibleRef.current = true;
@@ -255,7 +255,7 @@ export function About() {
   }
 
   return (
-    <section ref={sectionRef} id="about" className="relative h-[240vh]">
+    <section ref={sectionRef} id="about" className="relative h-[300vh]">
       <div className="sticky top-14 h-[calc(100svh-3.5rem)] overflow-hidden">
         <div className="relative mx-auto flex h-full w-full max-w-6xl flex-col gap-4 px-[clamp(1.25rem,5vw,4rem)] py-4 md:grid md:grid-cols-[minmax(0,0.42fr)_minmax(0,0.58fr)] md:items-start md:gap-8 md:py-6 lg:gap-12 xl:gap-14">
           {/* Identity — stays visible beside the highlighted build */}
