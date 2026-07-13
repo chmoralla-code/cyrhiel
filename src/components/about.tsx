@@ -257,9 +257,9 @@ export function About() {
   return (
     <section ref={sectionRef} id="about" className="relative h-[240vh]">
       <div className="sticky top-14 h-[calc(100svh-3.5rem)] overflow-hidden">
-        <div className="relative mx-auto flex h-full w-full max-w-6xl flex-col gap-4 px-[clamp(1.25rem,5vw,4rem)] py-4 md:grid md:grid-cols-[minmax(0,0.42fr)_minmax(0,0.58fr)] md:items-center md:gap-8 md:py-6 lg:gap-12 xl:gap-14">
+        <div className="relative mx-auto flex h-full w-full max-w-6xl flex-col gap-4 px-[clamp(1.25rem,5vw,4rem)] py-4 md:grid md:grid-cols-[minmax(0,0.42fr)_minmax(0,0.58fr)] md:items-start md:gap-8 md:py-6 lg:gap-12 xl:gap-14">
           {/* Identity — stays visible beside the highlighted build */}
-          <div className="relative z-10 min-h-0 max-h-[46%] shrink-0 overflow-y-auto pr-1 md:max-h-[calc(100svh-5.5rem)]">
+          <div className="relative z-10 min-h-0 shrink-0 overflow-y-auto pr-1 max-h-[min(46%,22rem)] md:max-h-[calc(100svh-5.5rem)] md:pt-2">
             <p className="eyebrow">{site.about.eyebrow}</p>
             <p className="meta-label mt-2 text-muted lg:mt-3">
               {site.about.base ?? ""}
@@ -376,7 +376,7 @@ export function About() {
               </g>
             </svg>
 
-            <div className="relative flex h-full min-h-[38vh] items-center justify-center lg:min-h-0">
+            <div className="relative flex h-full min-h-[38vh] items-start justify-center pt-2 md:min-h-[calc(100svh-6rem)] md:items-center md:pt-0">
               <motion.div
                 aria-hidden
                 className="relative z-[1] w-[min(42vw,200px)] lg:w-[min(36vw,22rem)]"
