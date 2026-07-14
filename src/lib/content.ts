@@ -79,7 +79,7 @@ export type SiteContent = {
 export const DEFAULT_SITE: SiteContent = {
   name: "Cyrhiel Moralla",
   nameDisplay: "CYRHIEL MORALLA",
-  role: "Architect · Systems builder",
+  role: "Architecture graduate & architect for systems",
   title: "Cyrhiel Moralla — Blueprint Systems",
   description:
     "Cyrhiel Moralla designs and ships the systems businesses run on—websites, Android apps, custom software, POS, and PisoWiFi networks.",
